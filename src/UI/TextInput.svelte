@@ -1,10 +1,10 @@
 <script>
-    export let controlType;
+    export let controlType = false;
     export let id;
     export let label;
-    export let rows;
+    export let rows = false;
     export let value;
-    export let type;
+    export let type = false;
 </script>
 
 <style>

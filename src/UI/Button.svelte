@@ -1,8 +1,8 @@
 <script>
     export let type;
     export let caption;
-    export let href;
-    export let mode;
+    export let href = false;
+    export let mode = false;
 </script>
 
 <style>
