@@ -1,27 +1,47 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
-    import TextInput from '../UI/TextInput.svelte';
-    import Modal from '../UI/Modal.svelte';
+  import {createEventDispatcher} from 'svelte';
+  import TextInput from '../UI/TextInput.svelte';
+  import Button from '../UI/Button.svelte';
+  import Modal from '../UI/Modal.svelte';
+  import {istEmpty, isValidEmail} from "../helpers/validation";
 
-    let title = "";
-    let subtitle = "";
-    let address = "";
-    let email = "";
-    let description = "";
-    let imageUrl = "";
+  let title = "";
+  let subtitle = "";
+  let address = "";
+  let email = "";
+  let description = "";
+  let imageUrl = "";
 
-    const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-    function submitForm() {
-        dispatch('save', {
-            title: title,
-            subtitle: subtitle,
-            address: address,
-            email: email,
-            description: description,
-            imageUrl: imageUrl
-        });
-    }
+  $: titleValid = !istEmpty(title);
+  $: subtitleValid = !istEmpty(subtitle);
+  $: addressValid = !istEmpty(address);
+  $: descriptionValid = !istEmpty(description);
+  $: imageUrlValid = !istEmpty(imageUrl);
+  $: emailValid = isValidEmail(email)
+  $: formIsValid =
+    titleValid &&
+    subtitleValid &&
+    addressValid &&
+    descriptionValid &&
+    imageUrlValid &&
+    emailValid;
+
+  function submitForm() {
+    dispatch('save', {
+      title: title,
+      subtitle: subtitle,
+      address: address,
+      email: email,
+      description: description,
+      imageUrl: imageUrl
+    });
+  }
+
+function cancel() {
+  dispatch('cancel');
+}
 </script>
 
 <style>
@@ -32,37 +52,51 @@
 <Modal title="Edit Meetup Data" on:cancel>
     <form on:submit|preventDefault={submitForm}>
         <TextInput
-                id="title"
-                label="Title"
-                value={title}
-                on:input={event => (title = event.target.value)} />
+            id="title"
+            label="Title"
+            valid="{titleValid}"
+            validityMessage="Please enter a valid title."
+            value={title}
+            on:input={event => (title = event.target.value)} />
         <TextInput
-                id="subtitle"
-                label="Subtitle"
-                value={subtitle}
-                on:input={event => (subtitle = event.target.value)} />
+            id="subtitle"
+            label="Subtitle"
+            valid="{subtitleValid}"
+            validityMessage="Please enter a valid subtitle."
+            value={subtitle}
+            on:input={event => (subtitle = event.target.value)} />
         <TextInput
-                id="address"
-                label="Address"
-                value={address}
-                on:input={event => (address = event.target.value)} />
+            id="address"
+            label="Address"
+            valid="{addressValid}"
+            validityMessage="Please enter a valid address."
+            value={address}
+            on:input={event => (address = event.target.value)} />
         <TextInput
-                id="imageUrl"
-                label="Image URL"
-                value={imageUrl}
-                on:input={event => (imageUrl = event.target.value)} />
+            id="imageUrl"
+            label="Image URL"
+            valid="{imageUrl}"
+            validityMessage="Please enter a valid image URL."
+            value={imageUrl}
+            on:input={event => (imageUrl = event.target.value)} />
         <TextInput
-                id="email"
-                label="E-Mail"
-                type="email"
-                value={email}
-                on:input={event => (email = event.target.value)} />
+            id="email"
+            label="E-Mail"
+            valid="{emailValid}"
+            validityMessage="Please enter a valid email."
+            type="email"
+            value={email}
+            on:input={event => (email = event.target.value)} />
         <TextInput
-                id="description"
-                label="Description"
-                controlType="textarea"
-                value={description}
-                on:input={event => (description = event.target.value)} />
-<!--        <Button type="submit">Save</Button>-->
+            id="description"
+            label="Description"
+            valid="{descriptionValid}"
+            validityMessage="Please enter a valid description."
+            controlType="textarea"
+            bind:value={description} />
     </form>
+        <div slot="footer">
+            <Button type="button" mode="outline" on:click={cancel}>Cancel</Button>
+            <Button type="button" on:click={submitForm} disabled={!formIsValid}>Save</Button>
+        </div>
 </Modal>
